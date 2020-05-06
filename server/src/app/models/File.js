@@ -14,6 +14,12 @@ class File extends Model {
 				mimetype: Sequelize.STRING,
 				type: Sequelize.ENUM(['avatar', 'background', 'file']),
 				size: Sequelize.INTEGER,
+				url: {
+					type: Sequelize.VIRTUAL,
+					get() {
+						return `http://localhost:3333/files/${this.path}`
+					},
+				},
 			},
 			{
 				sequelize,
@@ -21,6 +27,11 @@ class File extends Model {
 		)
 
 		return this
+	}
+
+	static associate(models) {
+		this.belongsTo(models.User, { foreignKey: 'ownerId', as: 'owner' })
+		this.hasOne(models.User, { foreignKey: 'avatarId', as: 'user' })
 	}
 }
 

@@ -3,7 +3,8 @@ import File from '../models/File'
 class FileController {
 	async store(req, res) {
 		const { type } = req.body
-		const ownerId = req.body.noOwner ? null : req.userId
+		// const ownerId = req.body.noOwner ? null : req.userId
+		const ownerId = req.userId
 
 		const files = await Promise.all(
 			req.files.map((sendedFile) => {
