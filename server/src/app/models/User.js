@@ -12,7 +12,8 @@ class User extends Model {
 				},
 				name: Sequelize.STRING,
 				email: Sequelize.STRING,
-				password: Sequelize.STRING,
+				password: Sequelize.VIRTUAL,
+				password_hash: Sequelize.STRING,
 			},
 			{
 				sequelize,
@@ -21,8 +22,8 @@ class User extends Model {
 		)
 
 		this.addHook('beforeSave', async (user) => {
-			if (!bcrypt.getRounds(user.password)) {
-				user.password = await bcrypt.hash(user.password, 10)
+			if (user.password) {
+				user.password_hash = await bcrypt.hash(user.password, 10)
 			}
 		})
 
@@ -30,7 +31,7 @@ class User extends Model {
 	}
 
 	checkPassword(password) {
-		return bcrypt.compare(password, this.password)
+		return bcrypt.compare(password, this.password_hash)
 	}
 }
 
