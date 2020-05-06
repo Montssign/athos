@@ -3,9 +3,10 @@ import Sequelize from 'sequelize'
 import databaseConfig from '../configs/database'
 
 import User from '../app/models/User'
+import File from '../app/models/File'
 
 // Insert new models here
-const models = [User]
+const models = [User, File]
 
 class Database {
 	constructor() {
@@ -15,7 +16,7 @@ class Database {
 	init() {
 		this.connection = new Sequelize(databaseConfig)
 
-		models.map(model => model.init(this.connection))
+		models.map((model) => model.init(this.connection))
 	}
 }
 
