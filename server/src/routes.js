@@ -22,6 +22,7 @@ routes.use(authMiddleware)
 
 routes.put('/users', UserController.update)
 
+routes.get('/files', FileController.index)
 routes.post('/files', upload.array('file', 5), FileController.store)
 
 export default routes
