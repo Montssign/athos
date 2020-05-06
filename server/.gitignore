@@ -1,5 +1,8 @@
+# Defaults
 node_modules
-.vscode
 yarn-error.log
-.env
+.vscode
+
+# Environment
 public
+.env
