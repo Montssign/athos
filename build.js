@@ -43,10 +43,10 @@ const execAll = async () => {
   console.log("⚔️ Removed!")
   console.log("💞 Moving web application builded to public in server...")
   await movePublicBuilded()
-  console.log("❤️ Moved!")
+  console.log("😎 Moved!")
   console.log("💖 Building server!")
   execSync("yarn --cwd ./server build")
-  console.log("😎 Build finished!")
+  console.log("🚀 Build finished!")
 }
 
 execAll()

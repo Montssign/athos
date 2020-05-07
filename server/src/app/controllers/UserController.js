@@ -1,6 +1,7 @@
 import * as Yup from 'yup'
 
 import User from '../models/User'
+import Notification from '../schemas/Notification'
 
 class UserController {
 	async store(req, res) {
@@ -21,6 +22,11 @@ class UserController {
 		}
 
 		const { id, name, email } = await User.create(req.body)
+
+		await Notification.create({
+			content: `Seja muito bem vindo(a) ao Athos ${name}!`,
+			user: id,
+		})
 
 		return res.json({ id, name, email })
 	}
