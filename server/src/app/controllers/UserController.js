@@ -2,6 +2,8 @@ import * as Yup from 'yup'
 
 import User from '../models/User'
 import Notification from '../schemas/Notification'
+import Queue from '../../lib/Queue'
+import WelcomeMail from '../jobs/WelcomeMail'
 
 class UserController {
 	async store(req, res) {
@@ -27,6 +29,8 @@ class UserController {
 			content: `Seja muito bem vindo(a) ao Athos ${name}!`,
 			user: id,
 		})
+
+		await Queue.add(WelcomeMail.key, { name, email })
 
 		return res.json({ id, name, email })
 	}
