@@ -8,9 +8,9 @@ import WelcomeMail from '../jobs/WelcomeMail'
 class UserController {
 	async store(req, res) {
 		const schema = Yup.object().shape({
-			name: Yup.string().required(),
+			name: Yup.string().min(6).required(),
 			email: Yup.string().email().required(),
-			password: Yup.string().required().min(6),
+			password: Yup.string().min(6).required(),
 		})
 
 		if (!(await schema.isValid(req.body))) {
@@ -37,7 +37,7 @@ class UserController {
 
 	async update(req, res) {
 		const schema = Yup.object().shape({
-			name: Yup.string(),
+			name: Yup.string().min(3),
 			email: Yup.string().email(),
 			oldPassword: Yup.string().min(6),
 			password: Yup.string()
@@ -61,7 +61,7 @@ class UserController {
 
 		const user = await User.findByPk(req.userId)
 
-		if (email !== user.email) {
+		if (email && email !== user.email) {
 			const userExists = await User.findOne({
 				where: { email },
 			})
@@ -80,7 +80,7 @@ class UserController {
 
 		const { id, name } = await user.update(req.body)
 
-		return res.json({ id, name, email })
+		return res.json({ id, name, email: email || user.email })
 	}
 }
 
