@@ -43,9 +43,9 @@ class App {
 		this.server.use(Sentry.Handlers.requestHandler())
 		this.server.use(helmet())
 		if (process.env.NODE_ENV === 'development') {
-			this.use(cors())
+			this.server.use(cors())
 		} else {
-			this.use(cors(corsOptions))
+			this.server.use(cors(corsOptions))
 		}
 		this.server.use(express.json())
 		this.server.use(
