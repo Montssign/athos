@@ -22,6 +22,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-unused-vars': ['error', {argsIgnorePattern: 'next'}],
 		'semi': ['error', 'never'],
+		'no-plusplus': 'off',
 	},
 	overrides: [
     {

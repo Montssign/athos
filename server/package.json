@@ -11,10 +11,10 @@
 		"dev": "nodemon src/server.js",
 		"queue": "nodemon src/queue.js",
 		"build": "ls",
-		"pretest": "NODE_ENV=test sequelize db:migrate > /dev/null 2>&1",
+		"pretest": "NODE_ENV=test sequelize db:migrate:undo:all > /dev/null 2>&1; NODE_ENV=test sequelize db:migrate > /dev/null 2>&1",
 		"test": "NODE_ENV=test jest --forceExit --detectOpenHandles",
 		"posttest": "NODE_ENV=test sequelize db:migrate:undo:all > /dev/null 2>&1",
-		"pretest:w": "set NODE_ENV=test sequelize db:migrate",
+		"pretest:w": "set NODE_ENV=test sequelize db:migrate:undo:all; set NODE_ENV=test sequelize db:migrate",
 		"test:w": "set NODE_ENV=test jest",
 		"posttest:w": "set NODE_ENV=test sequelize db:migrate:undo:all"
 	},

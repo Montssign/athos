@@ -5,7 +5,7 @@ class NotificationController {
 		const { page = 1, limit = 20 } = req.query
 
 		const notifications = await Notification.find({
-			user: req.userId,
+			user: req.user.id,
 		})
 			.sort('createdAt')
 			.limit(limit)
@@ -16,7 +16,7 @@ class NotificationController {
 
 	async update(req, res) {
 		const notification = await Notification.findOneAndUpdate(
-			{ _id: req.params.id, user: req.userId },
+			{ _id: req.params.id, user: req.user.id },
 			{ read: true },
 			{ new: true }
 		)

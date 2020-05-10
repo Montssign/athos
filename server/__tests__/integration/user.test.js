@@ -19,6 +19,16 @@ describe('User', () => {
 		expect(response.body).toHaveProperty('id')
 	})
 
+	it('should not be able to register with invalid role', async () => {
+		const user = await factory.attrs('User')
+
+		user.role = 'member'
+
+		const response = await request(app).post('/api/users').send(user)
+
+		expect(response.status).toBe(400)
+	})
+
 	it('should not be able to register with duplicated email', async () => {
 		const user = await factory.attrs('User')
 
@@ -26,7 +36,7 @@ describe('User', () => {
 
 		const response = await request(app).post('/api/users').send(user)
 
-		expect(response.status).toBe(400)
+		expect(response.status).toBe(401)
 	})
 
 	it('should not be able to register with invalid password', async () => {
@@ -131,7 +141,7 @@ describe('User', () => {
 			})
 			.set('Authorization', `Bearer ${token}`)
 
-		expect(updateResponse.status).toBe(400)
+		expect(updateResponse.status).toBe(401)
 	})
 
 	it('should not be able to update a user email without confirmPassword', async () => {

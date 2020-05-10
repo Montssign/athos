@@ -4,7 +4,7 @@ class FileController {
 	async index(req, res) {
 		const { page = 1, limit = 20, type, isPublic } = req.query
 
-		const where = { ownerId: req.userId }
+		const where = { ownerId: req.user.id }
 
 		if (type) {
 			where.type = type
@@ -27,10 +27,10 @@ class FileController {
 	async store(req, res) {
 		const { type } = req.body
 		// const ownerId = req.body.noOwner ? null : req.userId
-		const ownerId = req.userId
+		const ownerId = req.user.id
 
 		const files = await Promise.all(
-			req.files.map((sendedFile) => {
+			req.files.map(async (sendedFile) => {
 				const {
 					originalname: name,
 					filename: path,
@@ -38,13 +38,17 @@ class FileController {
 					mimetype,
 				} = sendedFile
 
-				return File.create({
+				const file = await File.create({
 					name,
 					path,
 					size,
 					mimetype,
 					type,
 					ownerId,
+				})
+
+				return File.findByPk(file.id, {
+					attributes: ['id', 'name', 'path', 'url', 'size', 'mimetype', 'type'],
 				})
 			})
 		)

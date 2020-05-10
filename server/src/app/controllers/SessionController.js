@@ -11,19 +11,26 @@ class SessionController {
 
 		const user = await User.findOne({
 			where: { email },
-			include: [{ model: AclRole, as: 'roles', attributes: ['name'] }],
+			include: [
+				{
+					model: AclRole,
+					as: 'roles',
+					attributes: ['name'],
+					through: { attributes: [] },
+				},
+			],
 		})
 
 		if (!user) {
 			throw new Exception({
-				status: 400,
+				status: 401,
 				message: 'E-mail or password does not match',
 			})
 		}
 
 		if (!(await user.checkPassword(password))) {
 			throw new Exception({
-				status: 400,
+				status: 401,
 				message: 'E-mail or password does not match',
 			})
 		}
@@ -35,6 +42,7 @@ class SessionController {
 				id,
 				name,
 				email,
+				roles,
 			},
 			token: jwt.sign({ id, roles }, authConfig.secret, {
 				expiresIn: authConfig.expiresIn,

@@ -6,12 +6,14 @@ module.exports = {
 				references: { model: 'Users', key: 'id' },
 				onUpdate: 'CASCADE',
 				onDelete: 'CASCADE',
+				allowNull: false,
 			},
 			roleId: {
 				type: Sequelize.UUID,
 				references: { model: 'AclRoles', key: 'id' },
 				onUpdate: 'CASCADE',
 				onDelete: 'CASCADE',
+				allowNull: false,
 			},
 			createdAt: {
 				type: Sequelize.DATE,

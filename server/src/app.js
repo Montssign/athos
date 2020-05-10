@@ -41,12 +41,6 @@ class App {
 
 	middlewares() {
 		this.server.use(Sentry.Handlers.requestHandler())
-		this.server.use(helmet())
-		if (process.env.NODE_ENV === 'development') {
-			this.server.use(cors())
-		} else {
-			this.server.use(cors(corsOptions))
-		}
 		this.server.use(express.json())
 		this.server.use(
 			'/files',
@@ -54,16 +48,20 @@ class App {
 		)
 
 		if (
-			process.env.NODE_ENV !== 'development' &&
-			process.env.NODE_ENV !== 'test'
+			process.env.NODE_ENV === 'development' ||
+			process.env.NODE_ENV === 'test'
 		) {
+			this.server.use(cors())
+		} else {
+			this.server.use(helmet())
+			this.server.use(cors(corsOptions))
 			this.server.use(
 				new RateLimit({
 					store: new RateLimitRedis({
 						client: redis.createClient(redisConfig),
 					}),
 					windowMs: 1000 * 60,
-					max: 100,
+					max: 200,
 				})
 			)
 		}

@@ -58,4 +58,20 @@ describe('Session', () => {
 
 		expect(updateResponse.status).toBe(401)
 	})
+
+	it('should not be able to update a user name with invalid token', async () => {
+		const user = (await factory.create('User')).dataValues
+
+		const sessionResponse = await request(app).post('/api/sessions').send(user)
+		const { token } = sessionResponse.body
+
+		const updateResponse = await request(app)
+			.put('/api/users')
+			.send({
+				name: 'Felipe Lima',
+			})
+			.set('Authorization', `Bearer ${`${token}123`}`)
+
+		expect(updateResponse.status).toBe(401)
+	})
 })
