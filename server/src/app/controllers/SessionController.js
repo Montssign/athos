@@ -3,12 +3,16 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User'
 import authConfig from '../../configs/auth'
 import Exception from '../exceptions/Exception'
+import AclRole from '../models/AclRole'
 
 class SessionController {
 	async store(req, res) {
 		const { email, password } = req.body
 
-		const user = await User.findOne({ where: { email } })
+		const user = await User.findOne({
+			where: { email },
+			include: [{ model: AclRole, as: 'roles', attributes: ['name'] }],
+		})
 
 		if (!user) {
 			throw new Exception({
@@ -24,7 +28,7 @@ class SessionController {
 			})
 		}
 
-		const { id, name } = user
+		const { id, name, roles } = user
 
 		return res.json({
 			user: {
@@ -32,7 +36,7 @@ class SessionController {
 				name,
 				email,
 			},
-			token: jwt.sign({ id }, authConfig.secret, {
+			token: jwt.sign({ id, roles }, authConfig.secret, {
 				expiresIn: authConfig.expiresIn,
 			}),
 		})

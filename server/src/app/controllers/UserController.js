@@ -3,9 +3,11 @@ import Notification from '../schemas/Notification'
 import Queue from '../../lib/Queue'
 import WelcomeMail from '../jobs/WelcomeMail'
 import Exception from '../exceptions/Exception'
+import AclRole from '../models/AclRole'
 
 class UserController {
 	async store(req, res) {
+		const { role = 'client' } = req.body
 		const userExists = await User.findOne({ where: { email: req.body.email } })
 
 		if (userExists) {
@@ -21,6 +23,15 @@ class UserController {
 			content: `Seja muito bem vindo(a) ao Athos ${name}!`,
 			user: id,
 		})
+
+		const aclRole = AclRole.findOne({ where: { name: role } })
+
+		if (!aclRole) {
+			User.destroy({ force: true })
+			throw new Exception({ status: 400, message: 'Invalid role' })
+		}
+
+		User.addAclRole(aclRole)
 
 		await Queue.add(WelcomeMail.key, { name, email })
 

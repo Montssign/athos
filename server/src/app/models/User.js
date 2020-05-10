@@ -37,6 +37,11 @@ class User extends Model {
 	static associate(models) {
 		this.belongsTo(models.File, { foreignKey: 'avatarId', as: 'avatar' })
 		this.hasMany(models.File, { foreignKey: 'ownerId', as: 'files' })
+		this.belongsToMany(models.AclRole, {
+			through: 'AclRoleUser',
+			foreignKey: 'userId',
+			as: 'roles',
+		})
 	}
 }
 
