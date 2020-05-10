@@ -7,3 +7,7 @@ yarn-error.log
 public
 .env
 tmp
+
+# Tests
+__tests__/coverage
+__tests__/database.sqlite
