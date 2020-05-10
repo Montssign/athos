@@ -4,6 +4,7 @@ import express from 'express'
 import path from 'path'
 import helmet from 'helmet'
 import redis from 'redis'
+import cors from 'cors'
 import RateLimit from 'express-rate-limit'
 import RateLimitRedis from 'rate-limit-redis'
 import Youch from 'youch'
@@ -15,6 +16,17 @@ import './database'
 import routes from './routes'
 import sentryConfig from './configs/sentry'
 import redisConfig from './configs/redis'
+
+const whiteList = [process.env.ORIGIN_URL]
+const corsOptions = {
+	origin(origin, callback) {
+		if (whiteList.indexOf(origin) !== -1) {
+			callback(null, true)
+		} else {
+			callback(new Error('Not allowed by CORS'))
+		}
+	},
+}
 
 class App {
 	constructor() {
@@ -30,6 +42,11 @@ class App {
 	middlewares() {
 		this.server.use(Sentry.Handlers.requestHandler())
 		this.server.use(helmet())
+		if (process.env.NODE_ENV === 'development') {
+			this.use(cors())
+		} else {
+			this.use(cors(corsOptions))
+		}
 		this.server.use(express.json())
 		this.server.use(
 			'/files',
