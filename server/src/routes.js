@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import multer from 'multer'
+import Brute from 'express-brute'
+import BruteRedis from 'express-brute-redis'
 
 import multerConfg from './configs/multer'
+import redisConfig from './configs/redis'
 
 import authMiddleware from './app/middlewares/auth'
 
@@ -16,12 +19,18 @@ import NotificationController from './app/controllers/NotificationController'
 
 const routes = Router()
 const upload = multer(multerConfg)
+const bruteStore = new BruteRedis(redisConfig)
+const bruteForce = new Brute(bruteStore)
 
 routes.get('/', (req, res) => res.json({ message: 'Hello from Athos api' }))
 
 routes.post('/users', validateUserStore, UserController.store)
-
-routes.post('/sessions', validateSessionStore, SessionController.store)
+routes.post(
+	'/sessions',
+	bruteForce.prevent,
+	validateSessionStore,
+	SessionController.store
+)
 
 routes.use(authMiddleware)
 
