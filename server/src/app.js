@@ -1,8 +1,11 @@
 import './bootstrap'
 
+import express from 'express'
 import path from 'path'
 import helmet from 'helmet'
-import express from 'express'
+import redis from 'redis'
+import RateLimit from 'express-rate-limit'
+import RateLimitRedis from 'rate-limit-redis'
 import Youch from 'youch'
 import * as Sentry from '@sentry/node'
 
@@ -11,6 +14,7 @@ import './database'
 
 import routes from './routes'
 import sentryConfig from './configs/sentry'
+import redisConfig from './configs/redis'
 
 class App {
 	constructor() {
@@ -31,6 +35,21 @@ class App {
 			'/files',
 			express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
 		)
+
+		if (
+			process.env.NODE_ENV !== 'development' &&
+			process.env.NODE_ENV !== 'test'
+		) {
+			this.server.use(
+				new RateLimit({
+					store: new RateLimitRedis({
+						client: redis.createClient(redisConfig),
+					}),
+					windowMs: 1000 * 60,
+					max: 100,
+				})
+			)
+		}
 	}
 
 	routes() {
