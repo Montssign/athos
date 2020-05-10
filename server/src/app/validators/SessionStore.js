@@ -1,4 +1,5 @@
 import * as Yup from 'yup'
+import Exception from '../exceptions/Exception'
 
 export default async (req, res, next) => {
 	try {
@@ -11,6 +12,10 @@ export default async (req, res, next) => {
 
 		return next()
 	} catch (err) {
-		return res.status(400).json({ errors: err.inner })
+		throw new Exception({
+			status: 400,
+			message: 'Validation fails',
+			data: err.inner,
+		})
 	}
 }

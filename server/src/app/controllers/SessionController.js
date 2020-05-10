@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 
 import User from '../models/User'
 import authConfig from '../../configs/auth'
+import Exception from '../exceptions/Exception'
 
 class SessionController {
 	async store(req, res) {
@@ -10,15 +11,17 @@ class SessionController {
 		const user = await User.findOne({ where: { email } })
 
 		if (!user) {
-			return res
-				.status(401)
-				.json({ error: 'E-mail or password does not match' })
+			throw new Exception({
+				status: 400,
+				message: 'E-mail or password does not match',
+			})
 		}
 
 		if (!(await user.checkPassword(password))) {
-			return res
-				.status(401)
-				.json({ error: 'E-mail or password does not match' })
+			throw new Exception({
+				status: 400,
+				message: 'E-mail or password does not match',
+			})
 		}
 
 		const { id, name } = user

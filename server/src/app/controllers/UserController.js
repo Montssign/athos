@@ -2,13 +2,17 @@ import User from '../models/User'
 import Notification from '../schemas/Notification'
 import Queue from '../../lib/Queue'
 import WelcomeMail from '../jobs/WelcomeMail'
+import Exception from '../exceptions/Exception'
 
 class UserController {
 	async store(req, res) {
 		const userExists = await User.findOne({ where: { email: req.body.email } })
 
 		if (userExists) {
-			return res.status(400).json({ error: 'User already exists' })
+			throw new Exception({
+				status: 400,
+				message: 'User already exists',
+			})
 		}
 
 		const { id, name, email } = await User.create(req.body)
@@ -37,13 +41,19 @@ class UserController {
 			})
 
 			if (userExists) {
-				return res.status(400).json({ error: 'User already exists' })
+				throw new Exception({
+					status: 400,
+					message: 'User already exists',
+				})
 			}
 		}
 
 		if (oldPassword) {
 			if (!(await user.checkPassword(oldPassword))) {
-				return res.status(401).json({ error: 'Password does not match' })
+				throw new Exception({
+					status: 400,
+					message: 'Password does not match',
+				})
 			}
 			await user.update({ password })
 		}
